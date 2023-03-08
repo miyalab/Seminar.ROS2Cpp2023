@@ -58,8 +58,7 @@ int main()
             }
         }
         else{
-            std::cout << "not difinition quary number." << std::endl;
-            break;
+            std::cout << "not definition query number." << std::endl;
         }
 
     }while(query);
