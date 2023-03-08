@@ -20,12 +20,11 @@ protected:
 int main()
 {
     Human human1;
-    Human human2();
-    Human human3(23);
+    Human human2(23);
 
+    human1.setAge(11);
     std::cout << human1.getAge() << std::endl;
     std::cout << human2.getAge() << std::endl;
-    std::cout << human3.getAge() << std::endl;
 }
 
 Human::Human()
