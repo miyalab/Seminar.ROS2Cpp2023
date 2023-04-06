@@ -1,0 +1,40 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/kmiyauchi/workspace/ros2_ws/install/ros_robocore_interfaces/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/install/ros2_rs_miyauchi_interfaces/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/install/ros2_rs_interfaces/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectACT/ProjectBCR.RobotController/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectRyusei.miyauchi/ProjectRyusei.dummy_mercury/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectRyusei.miyauchi/ProjectRyusei.launcher/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectRyusei.miyauchi/ProjectRyusei.locator/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectRyusei.miyauchi/ProjectRyusei.logger/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectRyusei.miyauchi/ProjectRyusei.monitor/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectRyusei.miyauchi/ProjectRyusei.obstacle_detector/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectRyusei.miyauchi/ProjectRyusei.ohtalab_locator/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectRyusei.miyauchi/ProjectRyusei.ohtalab_obstacle_detector/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectRyusei.miyauchi/ProjectRyusei.path_following/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectRyusei.miyauchi/ProjectRyusei.path_planning/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectRyusei.miyauchi/ProjectRyusei.points_processor/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectRyusei.miyauchi/ProjectRyusei.recognition/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectRyusei.miyauchi/ProjectRyusei.switcher/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/ProjectRyusei.miyauchi/ProjectRyusei.waypoint/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/Robomech2023/RobotSim/include/**",
+        "/home/kmiyauchi/workspace/ros2_ws/src/tutorial_package/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
