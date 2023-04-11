@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/opt/ros/humble/include/**"
+                "/opt/ros/humble/include/**",
+                "~/ros2_ws/install/tutorial_interfaces/include/**"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
