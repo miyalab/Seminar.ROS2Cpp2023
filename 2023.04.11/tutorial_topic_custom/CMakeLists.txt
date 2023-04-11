@@ -17,7 +17,7 @@ set(NODES
 
 foreach(target IN LISTS NODES)
   add_executable(${target} src/${target}.cpp)
-  ament_target_dependencies(${target} rclcpp geometry_msgs)
+  ament_target_dependencies(${target} rclcpp tutorial_interfaces)
   install(TARGETS ${target} DESTINATION lib/${PROJECT_NAME})
 endforeach()
 
