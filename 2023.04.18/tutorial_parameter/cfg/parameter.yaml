@@ -1,0 +1,5 @@
+parameter:
+  ros__parameters:
+    int_val   : 10
+    string    : "Hello world"
+    double_val: 1.2122141

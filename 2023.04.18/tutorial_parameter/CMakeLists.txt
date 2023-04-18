@@ -17,4 +17,7 @@ foreach(target IN LISTS NODES)
   install(TARGETS ${target} DESTINATION lib/${PROJECT_NAME})
 endforeach()
 
+install(DIRECTORY cfg DESTINATION share/${PROJECT_NAME}/)
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+
 ament_package()
