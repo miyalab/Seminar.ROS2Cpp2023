@@ -1,6 +1,7 @@
 #include <thread>
 #include <mutex>
 #include <memory>
+#include <random>
 
 #include <rclcpp/rclcpp.hpp>
 #include <geometry_msgs/msg/twist.hpp>
@@ -9,6 +10,7 @@
 using semi_robot_interfaces::msg::RobotState;
 using geometry_msgs::msg::Twist;
 
+rclcpp::Node::SharedPtr g_node;
 std::mutex g_vel_mutex;
 Twist::SharedPtr g_vel_ptr = std::make_shared<Twist>();
 
@@ -22,12 +24,13 @@ void onCmdVelSubscribed(const Twist::SharedPtr msg)
 int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("robot");
-    auto state_publisher = node->create_publisher<RobotState>("~/state", 10);
-    auto vel_subscriber = node->create_subscription<Twist>("~/cmd_vel", 10, onCmdVelSubscribed);
+    g_node = rclcpp::Node::make_shared("robot");
+    auto state_publisher = g_node->create_publisher<RobotState>("~/state", 10);
+    auto vel_subscriber = g_node->create_subscription<Twist>("~/cmd_vel", 10, onCmdVelSubscribed);
+    std::thread([]{rclcpp::spin(g_node);}).detach();
 
-    const auto WHEEL_DIAMETER = node->declare_parameter<double>("wheel_diameter", 0.1);
-    const auto ENCODER_COUNT = node->declare_parameter<int>("encoder_count", 1000);
+    const auto WHEEL_DIAMETER = g_node->declare_parameter<double>("wheel_diameter", 0.1);
+    const auto ENCODER_COUNT = g_node->declare_parameter<int>("encoder_count", 1000);
     std::srand(std::time(nullptr));
     RobotState state;
     for(rclcpp::WallRate loop(1); rclcpp::ok(); loop.sleep()){
@@ -72,7 +75,7 @@ int main(int argc, char **argv)
 
         state_publisher->publish(state);
 
-        RCLCPP_INFO(node->get_logger(), "vel: [%lf %lf %lf][%lf %lf %lf]",
+        RCLCPP_INFO(g_node->get_logger(), "vel: [%lf %lf %lf][%lf %lf %lf]",
             vel_ptr->linear.x,
             vel_ptr->linear.y,
             vel_ptr->linear.z,
@@ -81,4 +84,5 @@ int main(int argc, char **argv)
             vel_ptr->angular.z
         );
     }
+    rclcpp::shutdown();
 }
