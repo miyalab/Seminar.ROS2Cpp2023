@@ -22,7 +22,7 @@ void onCmdVelSubscribed(const Twist::SharedPtr msg)
 int main(int argc, char **argv)
 {
     rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("publisher");
+    auto node = rclcpp::Node::make_shared("robot");
     auto state_publisher = node->create_publisher<RobotState>("~/state", 10);
     auto vel_subscriber = node->create_subscription<Twist>("~/cmd_vel", 10, onCmdVelSubscribed);
 
