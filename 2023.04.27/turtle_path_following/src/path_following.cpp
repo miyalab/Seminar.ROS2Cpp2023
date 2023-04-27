@@ -5,6 +5,10 @@
 #include <geometry_msgs/msg/pose2_d.hpp>
 #include <geometry_msgs/msg/twist.hpp>
 
+constexpr double MAX_LINEAR_VELOCITY = 1.0;
+constexpr double MAX_ANGULAR_VELOCITY = 1.0;
+constexpr double THRESH_THETA = 3.0 * M_PI / 180;
+
 std::mutex g_mutex;
 geometry_msgs::msg::Pose2D::SharedPtr g_location_ptr;
 geometry_msgs::msg::Pose2D::SharedPtr g_target_ptr;
@@ -41,23 +45,39 @@ int main(int argc, char **argv)
         g_mutex.unlock();
         if(!location_ptr || !target_ptr) continue;
 
-        double error_x = target_ptr->x - location_ptr->x;
-        double error_y = target_ptr->y - location_ptr->y;
-        double error_r = std::hypot(error_x, error_y);
+        geometry_msgs::msg::Pose2D error;
+        double error_r = std::hypot(error.x = target_ptr->x - location_ptr->x, error.y = target_ptr->y - location_ptr->y);
+        // 上記，以下プログラムと同等
+        // error.x = target_ptr->x - location_ptr->x;
+        // error.y = target_ptr->y - location_ptr->y;
+        // double error_r = std::hypot(error.x, error.y);
 
-        double target_theta;
-        if(error_r < 0.01) target_theta = target_ptr->theta;
-        else target_theta = std::atan2(error_y, error_x);
+        error.theta = (error_r < 0.01)? target_ptr->theta: std::atan2(error.y, error.x) - location_ptr->theta;
+        // 上記，以下プログラムと同等
+        // double target_theta;
+        // if(error_r < 0.01) target_theta = target_ptr->theta;
+        // else target_theta = std::atan2(error.y, error.x);
+        // error.theta = target_theta - location_ptr->theta;
 
-        double error_theta = target_theta - location_ptr->theta;
-        if(error_theta > M_PI) error_theta -= 2*M_PI;
-        else if(error_theta < -M_PI) error_theta += 2*M_PI;
-        if(std::abs(error_theta) > 3.0 * M_PI / 180) error_r = 0;
+        error.theta += 2 * M_PI * ((error.theta < -M_PI) - (error.theta > M_PI));
+        // 上記，以下プログラムと同等
+        // if(error.theta > M_PI)       error.theta -= 2*M_PI;
+        // else if(error.theta < -M_PI) error.theta += 2*M_PI;
 
-        vel_msg.linear.x = std::min(error_r, 1.0);
-        if(error_theta > 1)  error_theta = 1;
-        if(error_theta < -1) error_theta = -1;
-        vel_msg.angular.z = error_theta;
+        error_r *= (-THRESH_THETA < error.theta && error.theta < THRESH_THETA);
+        // 上記，以下プログラムと同等
+        // if(std::abs(error.theta) > THRESH_THETA) error_r = 0;
+
+        vel_msg.linear.x  = error_r 
+                          +(MAX_LINEAR_VELOCITY - error_r) * (error_r > MAX_LINEAR_VELOCITY);
+        vel_msg.angular.z = error.theta 
+                          + (MAX_ANGULAR_VELOCITY - error.theta*(1 - 2*(error.theta < 0))) 
+                            * ((error.theta > MAX_ANGULAR_VELOCITY) - (error.theta < -MAX_ANGULAR_VELOCITY));
+        // 上記，以下プログラムと同等（min関数は中身でifが使用されている）
+        // vel_msg.linear.x = std::min(error_r, MAX_LINEAR_VELOCITY);
+        // if(error.theta >  MAX_ANGULAR_VELOCITY) error.theta =  MAX_ANGULAR_VELOCITY;
+        // if(error.theta < -MAX_ANGULAR_VELOCITY) error.theta = -MAX_ANGULAR_VELOCITY;
+        // vel_msg.angular.z = error.theta;
 
         vel_publisher->publish(vel_msg);
         RCLCPP_INFO(g_node->get_logger(), "[%lf, %lf]", vel_msg.linear.x, vel_msg.angular.z);
