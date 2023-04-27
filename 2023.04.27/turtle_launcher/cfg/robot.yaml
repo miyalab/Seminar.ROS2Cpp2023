@@ -1,0 +1,4 @@
+parameter:
+  ros__parameters:
+    wheel_diameter: 0.2
+    encoder_count : 1000
