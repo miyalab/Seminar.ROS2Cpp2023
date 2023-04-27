@@ -40,6 +40,10 @@ int main(int argc, char **argv)
         // 目標位置とのズレを判定
         if(std::hypot(target_msg.x - location_ptr->x, target_msg.y - location_ptr->y) <= 0.01){
             index *= (++index < 4);
+            /** 上記は以下のコードと同等
+             * i++;
+             * if(i>=4) i=0;
+             */
             target_msg.x = target_point[index][0] + 4;
             target_msg.y = target_point[index][1] + 4;
         }
