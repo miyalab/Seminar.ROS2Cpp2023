@@ -46,6 +46,7 @@ void Subscriber::onValueSubscribed(const std_msgs::msg::Int32::SharedPtr msg)
     this->value_mutex.lock();
     this->value_ptr = msg;
     this->value_mutex.unlock();
+    RCLCPP_INFO_STREAM(this->get_logger(), "subscribed:" << std::hex << reinterpret_cast<std::uintptr_t>(this->value_ptr.get()));
 }
 
 void Subscriber::run()
@@ -56,8 +57,6 @@ void Subscriber::run()
         this->value_ptr = nullptr;
         this->value_mutex.unlock();
         if(!value) continue; // value_ptrがnull -> 未受信
-
-        RCLCPP_INFO(this->get_logger(), "I subscribed[%d]", value->data);
     }
 }
 }
