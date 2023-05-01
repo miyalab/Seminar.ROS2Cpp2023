@@ -25,7 +25,7 @@ private:
 
 // 以下，メソッド定義
 namespace ROS2TutorialComponent{
-Subscriber::Subscriber(rclcpp::NodeOptions options) : rclcpp::Node("publisher", options)
+Subscriber::Subscriber(rclcpp::NodeOptions options) : rclcpp::Node("subscriber", options)
 {
     using std::placeholders::_1;
 
@@ -50,7 +50,6 @@ void Subscriber::onValueSubscribed(const std_msgs::msg::Int32::SharedPtr msg)
 
 void Subscriber::run()
 {
-    std_msgs::msg::Int32 msg;
     for(rclcpp::WallRate loop(1); rclcpp::ok(); loop.sleep()){
         this->value_mutex.lock();
         auto value = this->value_ptr;
