@@ -1,0 +1,46 @@
+#include <thread>
+#include <mutex>
+#include <memory>
+
+#include <rclcpp/rclcpp.hpp>
+#include <std_msgs/msg/int32.hpp>
+
+// 以下，クラス定義
+namespace ROS2TutorialComponent{
+class Publisher: public rclcpp::Node{
+public:
+    Publisher(rclcpp::NodeOptions options);
+    virtual ~Publisher();
+private:
+    // publisher関連
+    rclcpp::Publisher<std_msgs::msg::Int32>::SharedPtr value_publisher;
+
+    std::unique_ptr<std::thread> thread;    
+    void run();
+};
+}
+
+// 以下，メソッド定義
+namespace ROS2TutorialComponent{
+Publisher::Publisher(rclcpp::NodeOptions options) : rclcpp::Node("publisher", options)
+{
+    this->value_publisher = this->create_publisher<std_msgs::msg::Int32>("/value", 10);
+
+    this->thread = std::make_unique<std::thread>(&Publisher::run, this);
+    this->thread->detach();
+}
+
+Publisher::~Publisher()
+{
+    this->thread.release();
+}
+
+void Publisher::run()
+{
+    std_msgs::msg::Int32 msg;
+    for(rclcpp::WallRate loop(1); rclcpp::ok(); loop.sleep()){
+        this->value_publisher->publish(msg);
+        RCLCPP_INFO(this->get_logger(), "I published [%d]", msg.data++);
+    }
+}
+}
