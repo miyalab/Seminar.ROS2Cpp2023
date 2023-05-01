@@ -30,7 +30,7 @@ Subscriber::Subscriber(rclcpp::NodeOptions options) : rclcpp::Node("subscriber",
     using std::placeholders::_1;
 
     this->value_subscriber = this->create_subscription<std_msgs::msg::Int32>(
-        "/value", 10, std::bind(&Subscriber::onValueSubscribed, this, _1));
+        "value", 10, std::bind(&Subscriber::onValueSubscribed, this, _1));
 
     this->thread = std::make_unique<std::thread>(&Subscriber::run, this);
     this->thread->detach();

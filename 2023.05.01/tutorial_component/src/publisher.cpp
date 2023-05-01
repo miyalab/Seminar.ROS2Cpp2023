@@ -24,7 +24,7 @@ private:
 namespace ROS2TutorialComponent{
 Publisher::Publisher(rclcpp::NodeOptions options) : rclcpp::Node("publisher", options)
 {
-    this->value_publisher = this->create_publisher<std_msgs::msg::Int32>("/value", 10);
+    this->value_publisher = this->create_publisher<std_msgs::msg::Int32>("value", 10);
 
     this->thread = std::make_unique<std::thread>(&Publisher::run, this);
     this->thread->detach();
