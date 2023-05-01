@@ -44,3 +44,6 @@ void Publisher::run()
     }
 }
 }
+
+#include <rclcpp_components/register_node_macro.hpp>
+RCLCPP_COMPONENTS_REGISTER_NODE(ROS2TutorialComponent::Publisher)
