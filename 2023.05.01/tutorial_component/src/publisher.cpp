@@ -37,10 +37,12 @@ Publisher::~Publisher()
 
 void Publisher::run()
 {
-    std_msgs::msg::Int32 msg;
+    int cnt = 0;
     for(rclcpp::WallRate loop(1); rclcpp::ok(); loop.sleep()){
-        this->value_publisher->publish(msg);
-        RCLCPP_INFO(this->get_logger(), "I published [%d]", msg.data++);
+        auto msg = std::make_unique<std_msgs::msg::Int32>();
+        msg->data = cnt++;
+        RCLCPP_INFO_STREAM(this->get_logger(), "publish:" << std::hex << reinterpret_cast<std::uintptr_t>(msg.get()));
+        this->value_publisher->publish(std::move(msg));
     }
 }
 }
