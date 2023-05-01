@@ -27,4 +27,7 @@ rclcpp_components_register_nodes(${PROJECT_NAME} "ROS2TutorialComponent::Publish
 
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 
+# launch
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+
 ament_package()
