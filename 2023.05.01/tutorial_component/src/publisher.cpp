@@ -24,6 +24,8 @@ private:
 namespace ROS2TutorialComponent{
 Publisher::Publisher(rclcpp::NodeOptions options) : rclcpp::Node("publisher", options)
 {
+    auto parameter = this->declare_parameter<std::string>("string", "-");
+    RCLCPP_INFO(this->get_logger(), "parameter: %s", parameter.c_str());
     this->value_publisher = this->create_publisher<std_msgs::msg::Int32>("value", 10);
 
     this->thread = std::make_unique<std::thread>(&Publisher::run, this);

@@ -27,6 +27,9 @@ rclcpp_components_register_nodes(${PROJECT_NAME} "ROS2TutorialComponent::Publish
 
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
 
+# cfg
+install(DIRECTORY cfg DESTINATION share/${PROJECT_NAME}/)
+
 # launch
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 

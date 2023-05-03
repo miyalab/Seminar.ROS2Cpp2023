@@ -22,6 +22,7 @@ def generate_launch_description():
                 package='tutorial_component',
                 plugin='ROS2TutorialComponent::Publisher',
                 name='publisher',
+                parameters=[join(pkg_prefix, "cfg/config.yaml")],
                 extra_arguments=[{'use_intra_process_comms': True}]
             ),
             ComposableNode(
