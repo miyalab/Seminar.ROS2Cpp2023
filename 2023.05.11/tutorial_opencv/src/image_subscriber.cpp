@@ -113,6 +113,7 @@ void ImageSubscriber::run()
     for(rclcpp::WallRate loop(30); rclcpp::ok(); loop.sleep()){
         this->image_mutex.lock();
         auto ros_image = this->image_ptr;
+        this->image_ptr = nullptr;
         this->image_mutex.unlock();
         if(!ros_image) continue;
 
