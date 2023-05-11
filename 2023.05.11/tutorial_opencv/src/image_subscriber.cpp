@@ -116,7 +116,6 @@ void ImageSubscriber::run()
         this->image_mutex.unlock();
         if(!ros_image) continue;
 
-        RCLCPP_INFO(this->get_logger(), "subsribed");
         auto cv_img = cv_bridge::toCvShare(ros_image, ros_image->encoding);
         RCLCPP_INFO_STREAM(this->get_logger(), "address: " << std::hex << ros_image.get());
         cv::imshow("debug", cv_img->image);
