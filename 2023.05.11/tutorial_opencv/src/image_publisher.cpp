@@ -31,6 +31,8 @@ public:
     ImagePublisher(rclcpp::NodeOptions options = rclcpp::NodeOptions());
     ~ImagePublisher();
 private:
+    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_publisher;
+
     std::unique_ptr<std::thread> thread;
     void run();
 };
@@ -66,6 +68,7 @@ ImagePublisher::ImagePublisher(rclcpp::NodeOptions options) : rclcpp::Node("imag
 
     // Initialize publisher
     RCLCPP_INFO(this->get_logger(), "Initialize publishers...");
+    this->image_publisher = this->create_publisher<sensor_msgs::msg::Image>("~/image", 10);
     RCLCPP_INFO(this->get_logger(), "Complete! Publishers were initialized.");
 
     // Initialize Service-Server
