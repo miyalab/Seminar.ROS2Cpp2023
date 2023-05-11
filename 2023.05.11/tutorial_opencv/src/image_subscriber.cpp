@@ -26,12 +26,15 @@ namespace ROS2Tutorial {
  * @brief Component Definition
  * 
  */
-class ImagePublisher: public rclcpp::Node {
+class ImageSubscriber: public rclcpp::Node {
 public:
-    ImagePublisher(rclcpp::NodeOptions options = rclcpp::NodeOptions());
-    ~ImagePublisher();
+    ImageSubscriber(rclcpp::NodeOptions options = rclcpp::NodeOptions());
+    ~ImageSubscriber();
 private:
-    rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr image_publisher;
+    sensor_msgs::msg::Image::SharedPtr image_ptr;
+    rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr image_subscriber;
+    std::mutex image_mutex;
+    void onImageSubscribed(const sensor_msgs::msg::Image::SharedPtr msg);
 
     std::unique_ptr<std::thread> thread;
     void run();
@@ -51,7 +54,7 @@ namespace ROS2Tutorial{
  * 
  * @param options 
  */
-ImagePublisher::ImagePublisher(rclcpp::NodeOptions options) : rclcpp::Node("image_publisher", options)
+ImageSubscriber::ImageSubscriber(rclcpp::NodeOptions options) : rclcpp::Node("image_subscriber", options)
 {
     // Using placeholders
     using std::placeholders::_1;
@@ -64,11 +67,11 @@ ImagePublisher::ImagePublisher(rclcpp::NodeOptions options) : rclcpp::Node("imag
 
     // Initialize subscriber
     RCLCPP_INFO(this->get_logger(), "Initialize subscribers...");
+    this->image_subscriber = this->create_subscription<sensor_msgs::msg::Image>("~/image", 10, std::bind(&ImageSubscriber::onImageSubscribed, this, _1));
     RCLCPP_INFO(this->get_logger(), "Complete! Subscribers were initialized.");
 
     // Initialize publisher
     RCLCPP_INFO(this->get_logger(), "Initialize publishers...");
-    this->image_publisher = this->create_publisher<sensor_msgs::msg::Image>("~/image", 10);
     RCLCPP_INFO(this->get_logger(), "Complete! Publishers were initialized.");
 
     // Initialize Service-Server
@@ -80,7 +83,7 @@ ImagePublisher::ImagePublisher(rclcpp::NodeOptions options) : rclcpp::Node("imag
     RCLCPP_INFO(this->get_logger(), "Complete! Service-clients were initialized.");
 
     // Main loop processing
-    this->thread = std::make_unique<std::thread>(&ImagePublisher::run, this);
+    this->thread = std::make_unique<std::thread>(&ImageSubscriber::run, this);
     this->thread->detach();
 }
 
@@ -88,35 +91,36 @@ ImagePublisher::ImagePublisher(rclcpp::NodeOptions options) : rclcpp::Node("imag
  * @brief Destroy the class object
  * 
  */
-ImagePublisher::~ImagePublisher()
+ImageSubscriber::~ImageSubscriber()
 {
     this->thread.release();
+}
+
+void ImageSubscriber::onImageSubscribed(const sensor_msgs::msg::Image::SharedPtr msg)
+{
+    this->image_mutex.lock();
+    this->image_ptr = msg;
+    this->image_mutex.unlock();
 }
 
 /**
  * @brief Execute method
  * 
  */
-void ImagePublisher::run()
+void ImageSubscriber::run()
 {
-    // カメラのOpen
-    cv::VideoCapture capture(0);
-    if(!capture.isOpened()){
-        RCLCPP_ERROR(this->get_logger(), "Capture device not found!");
-        return;
-    }
-
     // Main loop
     for(rclcpp::WallRate loop(30); rclcpp::ok(); loop.sleep()){
-        auto ros_image = std::make_unique<sensor_msgs::msg::Image>();
-        cv_bridge::CvImage cv_image;
-        cv_image.encoding = "bgr8";
-        cv_image.header.frame_id = "capture";
-        cv_image.header.stamp = this->now();
-        capture >> cv_image.image;
-        cv_image.toImageMsg(*ros_image.get());
+        this->image_mutex.lock();
+        auto ros_image = this->image_ptr;
+        this->image_mutex.unlock();
+        if(!ros_image) continue;
+
+        RCLCPP_INFO(this->get_logger(), "subsribed");
+        auto cv_img = cv_bridge::toCvShare(ros_image, ros_image->encoding);
         RCLCPP_INFO_STREAM(this->get_logger(), "address: " << std::hex << ros_image.get());
-        image_publisher->publish(std::move(ros_image));
+        cv::imshow("debug", cv_img->image);
+        cv::waitKey(1);
     }
 
     RCLCPP_INFO(this->get_logger(), "%s has stoped.", this->get_name());
@@ -124,7 +128,7 @@ void ImagePublisher::run()
 }
 
 #include <rclcpp_components/register_node_macro.hpp>
-RCLCPP_COMPONENTS_REGISTER_NODE(ROS2Tutorial::ImagePublisher)
+RCLCPP_COMPONENTS_REGISTER_NODE(ROS2Tutorial::ImageSubscriber)
 
 //-----------------------------------------------------------------------------------
 // end of file

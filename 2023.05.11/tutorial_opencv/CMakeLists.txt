@@ -14,7 +14,7 @@ find_package(cv_bridge REQUIRED)
 find_package(OpenCV REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
-  # src/image_subscriber.cpp
+  src/image_subscriber.cpp
   src/image_publisher.cpp
 )
 
@@ -26,7 +26,7 @@ ament_target_dependencies(${PROJECT_NAME}
   cv_bridge
 )
 
-# rclcpp_components_register_nodes(${PROJECT_NAME} "ROS2Tutorial::ImageSubscriber")
+rclcpp_components_register_nodes(${PROJECT_NAME} "ROS2Tutorial::ImageSubscriber")
 rclcpp_components_register_nodes(${PROJECT_NAME} "ROS2Tutorial::ImagePublisher")
 
 install(TARGETS ${PROJECT_NAME} DESTINATION lib)
