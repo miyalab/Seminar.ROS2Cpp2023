@@ -90,7 +90,7 @@ ImagePublisher::ImagePublisher(rclcpp::NodeOptions options) : rclcpp::Node("imag
  */
 ImagePublisher::~ImagePublisher()
 {
-    m_thread.release();
+    this->thread.release();
 }
 
 /**
@@ -99,8 +99,6 @@ ImagePublisher::~ImagePublisher()
  */
 void ImagePublisher::run()
 {
-    RCLCPP_INFO(this->get_logger(), "%s has started. thread id = %0x", this->get_name(), std::this_thread::get_id());
-    
     // カメラのOpen
     cv::VideoCapture capture(0);
     if(!capture.isOpened()){
@@ -115,8 +113,8 @@ void ImagePublisher::run()
         cv_image.header.frame_id = "capture";
         cv_image.header.stamp = this->now();
         capture >> cv_image.image;
-        cv_image.toImageMsg(ros_image.get());
-        image_publisher->publish(ros_image);
+        cv_image.toImageMsg(*ros_image.get());
+        image_publisher->publish(std::move(ros_image));
     }
 
     RCLCPP_INFO(this->get_logger(), "%s has stoped.", this->get_name());
